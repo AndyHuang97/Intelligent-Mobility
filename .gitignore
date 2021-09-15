@@ -1,0 +1,21 @@
+Data
+
+# scipy only spatial folder
+!scipy/
+scipy/*
+
+!scipy/scipy/
+scipy/scipy/*
+
+!scipy/scipy/spatial
+!scipy/scipy/spatial/*
+
+
+DMTM*
+__pycache__
+build
+
+
+*.so
+
+*.gdoc
