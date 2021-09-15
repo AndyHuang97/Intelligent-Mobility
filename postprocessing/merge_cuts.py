@@ -3,7 +3,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage, fcluster, inconsistent
 from scipy.spatial.distance import cdist, pdist
 
 # Assumes that there is only one split at each cut k
-def get_split_cluster_labels(Z, k):
+def get_split_cluster_labels(Z, k, split_th=200):
     cluster_init_label = 1
     split_cluster_labels = []
 
