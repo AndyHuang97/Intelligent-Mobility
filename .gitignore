@@ -1,14 +1,15 @@
 Data
 
-# scipy only spatial folder
-!scipy/
-scipy/*
+# # scipy only spatial folder
+# !scipy/
+# scipy/*
 
-!scipy/scipy/
-scipy/scipy/*
+# !scipy/scipy/
+# scipy/scipy/*
 
-!scipy/scipy/spatial
-!scipy/scipy/spatial/*
+# !scipy/scipy/spatial
+# !scipy/scipy/spatial/*
+scipy
 
 
 DMTM*
