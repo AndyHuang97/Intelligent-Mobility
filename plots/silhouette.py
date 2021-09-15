@@ -127,7 +127,7 @@ def plot_silhouette_merge_k_values(df, distance_matrix, Z, metric, link, k_value
                                 cluster_labels=cluster_labels,
                                 silhouette_row=i+1)
 
-        title = f"Cuts with k={cut_values} clusters, {metric}{df.shape[1]} and link {link}, with silhouette average: {silhouette_avg}"
+        title = f"Cuts with k={cut_values} clusters, {metric}{df.shape[1]} and link {link}, with silhouette average: {silhouette_avg:.02f}"
         fig.layout.annotations[i].update(text=title)
     fig.update_layout(height=row_height*rows,
                       showlegend=False)
