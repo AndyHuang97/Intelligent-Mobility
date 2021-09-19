@@ -16,6 +16,7 @@ def plot_individual_radar(fig, polar_args, r, theta, index, row=1, col=1):
   polar_args[f"polar{index}"] = dict(radialaxis=dict(visible=True,
                                                       range=[0.0, 1.0]
                                                       ),
+                                    angularaxis=dict(rotation = 90)
                                      )
 
   return fig, polar_args
@@ -25,7 +26,7 @@ def plot_all_medoids_radar(medoids_df, cluster_labels_counts, plot_cols=3,row_he
   rows = int(np.ceil(medoids_df.shape[0]/cols))
   print(f"rows: {rows}, cols: {cols}")
   #radar_title = f"Radars of the most representative person in each cluster"
-  titles = [str(i) for i in cluster_labels_counts] # get cluster size as title
+  titles = ["title"]*rows*cols # get cluster size as title
   specs = [[{'type': 'polar'}]*cols]*rows
   fig = make_subplots(rows=rows, cols=cols,
                             specs=specs,
@@ -37,7 +38,9 @@ def plot_all_medoids_radar(medoids_df, cluster_labels_counts, plot_cols=3,row_he
   for i in range(rows):
     for j in range(cols):
       #print(f"plotting: {i+1},{j+1}. Index = {i*cols+j+1}")
+      title = ""
       if i*cols+j < medoids_df.shape[0]:
+        #print(i*cols+j, medoids_df.shape[0], i*cols+j < medoids_df.shape[0])
         if medoids_df.drop("cluster", axis=1).shape[1] == 5:
           r = medoids_df.iloc[i*cols+j]
           theta = ["IUsers", "EnvImpact", "CarShare", "TollsTraffic"]
@@ -48,6 +51,9 @@ def plot_all_medoids_radar(medoids_df, cluster_labels_counts, plot_cols=3,row_he
                                                 r, theta, 
                                                 index=i*cols+j+1,
                                                 row=i+1,col=j+1)
+        title = f"{medoids_df['cluster'].iloc[i*cols+j]} ({cluster_labels_counts[i*cols+j]})"
+      #print(title)
+      fig.layout.annotations[i*cols+j].update(text=title)
   fig.update_layout(
     height=row_height*rows,
     **polar_args)
