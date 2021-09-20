@@ -63,30 +63,38 @@ def getMedoid(df_cluster, metric):
 # df_cluster is the original dataframe, which is the one we want to take information from.
 # This variant is useful when we want to represent the original value of the medoid in a radar chart.
 def getMedoidVDM(vdm_df_cluster, df_cluster, metric):
-    distance_matrix_cluster = squareform(pdist(vdm_df_cluster, metric=metric))
+    vdm_df_cluster_reduced = vdm_df_cluster.copy()
+    df_cluster_reduced = df_cluster.copy()
+    vdm_df_cluster_reduced.drop_duplicates(inplace=True)
+    df_cluster_reduced.drop_duplicates(inplace=True)
+    vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
+    df_cluster_reduced.reset_index(drop=True, inplace=True)
+
+    distance_matrix_cluster = squareform(pdist(vdm_df_cluster_reduced, metric=metric))
     distance_matrix_medoid_ix = np.argmin(distance_matrix_cluster.sum(axis=0))
-    medoid = df_cluster.iloc[distance_matrix_medoid_ix]
+    medoid = df_cluster_reduced.iloc[distance_matrix_medoid_ix]
 
     return medoid
 
-# Experimental
+# Get the ith medoid using the vdm metric for a radar chart.
+# vdm_df_cluster is expected to be converted in an appropriate form.
+# df_cluster is the original dataframe, which is the one we want to take information from.
+# This variant is useful when we want to represent the original value of the medoid in a radar chart.
 def get_ith_medoid(vdm_df_cluster, df_cluster, metric, ith):
     vdm_df_cluster_reduced = vdm_df_cluster.copy()
     df_cluster_reduced = df_cluster.copy()
     vdm_df_cluster_reduced.drop_duplicates(inplace=True)
     df_cluster_reduced.drop_duplicates(inplace=True)
-    for i in range(ith+1):
-        vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
-        df_cluster_reduced.reset_index(drop=True, inplace=True)
-        distance_matrix_cluster = squareform(pdist(vdm_df_cluster_reduced, metric=metric))
-        distance_matrix_medoid_ix = np.argmin(distance_matrix_cluster.sum(axis=0))
-        medoid = df_cluster_reduced.iloc[distance_matrix_medoid_ix]
-        #print(f"distance_matrix_medoid_ix: {distance_matrix_medoid_ix}")
-        #print(medoid)
-        #print(df_cluster_reduced)
-        #print(vdm_df_cluster_reduced)
-        vdm_df_cluster_reduced = vdm_df_cluster_reduced.drop(index=distance_matrix_medoid_ix)
-        df_cluster_reduced = df_cluster_reduced.drop(index=distance_matrix_medoid_ix)
+    vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
+    df_cluster_reduced.reset_index(drop=True, inplace=True)
+
+    distance_matrix_cluster = squareform(pdist(vdm_df_cluster_reduced, metric=metric))
+    sums = distance_matrix_cluster.sum(axis=0)
+    sorted_sums = np.sort(sums)
+    print(sorted_sums)
+    ith_medoid = sorted_sums[ith]
+    medoid_ix = np.where(sums == ith_medoid)[0][0]
+    medoid = df_cluster_reduced.iloc[medoid_ix]
     return medoid
 
 # Compute the wss using the medoid.
