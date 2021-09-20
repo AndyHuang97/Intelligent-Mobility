@@ -7,6 +7,7 @@ from .silhouette import getSilhouette
 # WARNING cannot use matplotlib in colab from here ...
 # import matplotlib.pyplot as plt
 
+# Compute wss and bss with centroid
 def ComputeWSSBSS(X, Z, distance_matrix, metric, k_values=range(1,20), postprocessing=False):
     wss_values = []
     bss_values = []
@@ -48,6 +49,8 @@ def ComputeWSSBSS(X, Z, distance_matrix, metric, k_values=range(1,20), postproce
         bss_values += [bss]
     return wss_values,bss_values
 
+# Get the medoid for wss computation.
+# df_cluster is expected to be converted in an appropriate form.
 def getMedoid(df_cluster, metric):
     distance_matrix_cluster = squareform(pdist(df_cluster, metric=metric))
     distance_matrix_medoid_ix = np.argmin(distance_matrix_cluster.sum(axis=0))
@@ -55,6 +58,38 @@ def getMedoid(df_cluster, metric):
 
     return medoid
 
+# Get the medoid using the vdm metric for a radar chart.
+# vdm_df_cluster is expected to be converted in an appropriate form.
+# df_cluster is the original dataframe, which is the one we want to take information from.
+# This variant is useful when we want to represent the original value of the medoid in a radar chart.
+def getMedoidVDM(vdm_df_cluster, df_cluster, metric):
+    distance_matrix_cluster = squareform(pdist(vdm_df_cluster, metric=metric))
+    distance_matrix_medoid_ix = np.argmin(distance_matrix_cluster.sum(axis=0))
+    medoid = df_cluster.iloc[distance_matrix_medoid_ix]
+
+    return medoid
+
+# Experimental
+def get_ith_medoid(vdm_df_cluster, df_cluster, metric, ith):
+    vdm_df_cluster_reduced = vdm_df_cluster.copy()
+    df_cluster_reduced = df_cluster.copy()
+    vdm_df_cluster_reduced.drop_duplicates(inplace=True)
+    df_cluster_reduced.drop_duplicates(inplace=True)
+    for i in range(ith+1):
+        vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
+        df_cluster_reduced.reset_index(drop=True, inplace=True)
+        distance_matrix_cluster = squareform(pdist(vdm_df_cluster_reduced, metric=metric))
+        distance_matrix_medoid_ix = np.argmin(distance_matrix_cluster.sum(axis=0))
+        medoid = df_cluster_reduced.iloc[distance_matrix_medoid_ix]
+        #print(f"distance_matrix_medoid_ix: {distance_matrix_medoid_ix}")
+        #print(medoid)
+        #print(df_cluster_reduced)
+        #print(vdm_df_cluster_reduced)
+        vdm_df_cluster_reduced = vdm_df_cluster_reduced.drop(index=distance_matrix_medoid_ix)
+        df_cluster_reduced = df_cluster_reduced.drop(index=distance_matrix_medoid_ix)
+    return medoid
+
+# Compute the wss using the medoid.
 def ComputeWSS(df, Z, metric, k_values=range(1,20), postprocessing=False, save_path=None):
     wss_values = []
 
