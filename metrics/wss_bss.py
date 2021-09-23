@@ -65,8 +65,6 @@ def getMedoid(df_cluster, metric):
 def getMedoidVDM(vdm_df_cluster, df_cluster, metric):
     vdm_df_cluster_reduced = vdm_df_cluster.copy()
     df_cluster_reduced = df_cluster.copy()
-    vdm_df_cluster_reduced.drop_duplicates(inplace=True)
-    df_cluster_reduced.drop_duplicates(inplace=True)
     vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
     df_cluster_reduced.reset_index(drop=True, inplace=True)
 
@@ -83,8 +81,6 @@ def getMedoidVDM(vdm_df_cluster, df_cluster, metric):
 def get_ith_medoid(vdm_df_cluster, df_cluster, metric, ith):
     vdm_df_cluster_reduced = vdm_df_cluster.copy()
     df_cluster_reduced = df_cluster.copy()
-    vdm_df_cluster_reduced.drop_duplicates(inplace=True)
-    df_cluster_reduced.drop_duplicates(inplace=True)
     vdm_df_cluster_reduced.reset_index(drop=True, inplace=True)
     df_cluster_reduced.reset_index(drop=True, inplace=True)
 
@@ -108,6 +104,8 @@ def ComputeWSS(df, Z, metric, k_values=range(1,20), postprocessing=False, save_p
 
         if (prev_cluster_labels == cluster_labels).all():
             wss_values += [wss]
+            if save_path:
+                np.save(save_path, wss_values)
             continue
         else:
             prev_cluster_labels = cluster_labels.copy()
